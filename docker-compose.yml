@@ -1,0 +1,37 @@
+version: '3.7'
+
+services:
+  mongen_media:
+    container_name: mongen_media_dev
+    build:
+      context: ${HOME}/mongen/mongen-media
+      dockerfile: Dockerfile
+    environment:
+      - APP_SETTINGS=config.DevelopmentConfig
+      - DATABASE_URL=postgresql://mongen:123123@db/mongen_media_db
+    volumes:
+      - '${HOME}/mongen/mongen-media:/app'
+    ports:
+      - '9090:9090'
+    restart: on-failure
+    links:
+      - db
+    depends_on:
+      - db
+
+  db:
+      image: "postgres:12"
+      container_name: mongen_media_db_dev
+      environment:
+        - POSTGRES_USER=mongen
+        - POSTGRES_PASSWORD=123123
+        - POSTGRES_DB=mongen_media_db
+      ports:
+        - '5433:5432'
+      volumes:
+        - ./postgres-data:/var/lib/postgresql/data
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U mongen -d mongen_media_db"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
