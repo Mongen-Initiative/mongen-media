@@ -28,7 +28,11 @@ def receive_file():
     file = request.files.get("file")
     file_id = crud.Create.store_media_file(file.filename, file.read())
 
-    data = {"message": "File stored successfully", "file_id": file_id}
+    data = {
+        "message": "File stored successfully",
+        "file_id": file_id,
+        "name": file.filename,
+    }
 
     resp = jsonify(data)
     resp.status_code = 200
